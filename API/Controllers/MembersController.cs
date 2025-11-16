@@ -1,14 +1,14 @@
-using API.Data;
-using API.Entityes;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using API.Data; // كلاس
+using API.Entityes; // كلاس 
+using Microsoft.AspNetCore.Authorization; // التحكم بالصلاحيات(API)
+using Microsoft.AspNetCore.Mvc;//عشان نقدر نستخدم [HttpPost], Controller.
+using Microsoft.EntityFrameworkCore;//للتعامل مع قاعدة البيانات.
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class MembersController(AppDbContext context) : ControllerBase
+   [AllowAnonymous] 
+
+    public class MembersController(AppDbContext context) : BaseApiController
     {
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<AppUser>>> GetMembers()
@@ -17,7 +17,7 @@ namespace API.Controllers
 
             return members;
         }
-
+[AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<AppUser>> GetMember(string id)
         {
