@@ -4,7 +4,8 @@ using API.Services;
 using Microsoft.EntityFrameworkCore;// (للتعامل مع SQL)
 using Microsoft.IdentityModel.Tokens;
 using System.Text;// لتحويل النصوص إلى Bytes قبل التشفير.
-using Microsoft.AspNetCore.Authentication.JwtBearer;// عشان نفعل JWT Authentication
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using API.Middleware;// عشان نفعل JWT Authentication
 
 var builder = WebApplication.CreateBuilder(args);// ينشئ تطبيق ويب جديد
 
@@ -38,6 +39,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)//يف
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionMiddlaware>();
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
 .WithOrigins("http://localhost:4200", "https://localhost:4200"));
 // AllowAnyHeader() → يسمح بأي Header.
