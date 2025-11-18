@@ -13,13 +13,14 @@ public class AppUser
     public required string DisplayName { get; set; }
 
     public required string Email { get; set; }
-
+     
+     public string? ImageUrl{get; set;}
     // this 
     public required byte[] PasswordHash { get; set; }
     //كلمة المرور بعد ما يتم تشفيرها (Hash).
     public required byte[] PasswordSalt { get; set; }
    
-
+public Member Member{get;set;}= null!;
 
 // عشان ما نخزن كلمة المرور الحقيقية في قاعدة البيانات.
 //نخزن فقط النتيجة المشفّرة (hash) + الـ salt.

@@ -19,7 +19,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>// إعداد قاعدة ال�
 });
 builder.Services.AddCors(); // Cross-Origin Resource Sharing لوصول API للمتصفح
 builder.Services.AddScoped<ITokenService, TokenService>();// لكل HTTP Request ينشئ instance جديدة ويستخدمها داخل نفس الطلب فقط.
-
+builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)//يفعّل نظام Authentication في المشروع.
 .AddJwtBearer(Options =>
 {
@@ -55,5 +55,17 @@ app.UseAuthentication();// يقرأ الـ Authorization Header.ويحدد اس�
 app.UseAuthorization();//
 
 app.MapControllers();// يخلي ASP.NET يطلع Endpoints بناءً على Controllers اللي عندك.
-
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+try
+{
+    var context = services.GetRequiredService<AppDbContext>();
+    await context.Database.MigrateAsync();
+    await Seed.SeedUsers(context);
+}
+catch(Exception ex)
+{
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex,"An error occured during migration");
+}
 app.Run();//يبدأ تشغيل السيرفر.

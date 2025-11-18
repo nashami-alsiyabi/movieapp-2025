@@ -1,32 +1,36 @@
 using API.Data; // كلاس
 using API.Entityes; // كلاس 
+using API.Interfaces;
 using Microsoft.AspNetCore.Authorization; // التحكم بالصلاحيات(API)
 using Microsoft.AspNetCore.Mvc;//عشان نقدر نستخدم [HttpPost], Controller.
-using Microsoft.EntityFrameworkCore;//للتعامل مع قاعدة البيانات.
 
 namespace API.Controllers
 {
-   [AllowAnonymous] 
-
-    public class MembersController(AppDbContext context) : BaseApiController
+   [Authorize]
+    public class MembersController(IMemberRepository memberRepository) : BaseApiController
     {
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<AppUser>>> GetMembers()
+        public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers()
         {
-            var members =  await context.Users.ToListAsync();
+           
 
-            return members;
+            return Ok (await memberRepository.GetMembersAsync());
         }
-[AllowAnonymous]
+        
         [HttpGet("{id}")]
-        public async Task<ActionResult<AppUser>> GetMember(string id)
+        public async Task<ActionResult<Member>> GetMember(string id)
         {
-            var members = await context.Users.FindAsync(id);
+            var member = await memberRepository.GetMemberByIdAsync(id);
 
-            if (members == null) return NotFound();
+            if (member == null) return NotFound();
 
             
-            return members  ;
+            return member  ;
+        }
+        [HttpGet("{id}/photos")]
+        public async Task<ActionResult<IReadOnlyList<Photo>>> GetMemberPhotos(string id)
+        {
+            return Ok (await memberRepository.GetPhotosForMemberAsync(id));      
         }
     }
 }
